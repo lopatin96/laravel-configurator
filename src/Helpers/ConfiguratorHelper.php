@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\Cache;
 
 class ConfiguratorHelper
 {
+    public static function getLimitedValue(ConfigKey $configKey, User $user = null): string|array|bool|int|float
+    {
+        return self::getValue(
+            self::getLimitedVersionConfigKey(
+                $configKey,
+                $user ?? Auth::user()
+            )
+        );
+    }
+
     public static function getValue(ConfigKey $configKey): string|array|bool|int|float
     {
         $data = self::getData($configKey);
@@ -20,51 +30,31 @@ class ConfiguratorHelper
 
     private static function getData(ConfigKey $configKey): array
     {
-        dd(Config::where('key', ConfigKey::TestKey)->first());
-        return self::getCachedData($configKey) ?? Config::find('key', ConfigKey::TestKey->value)->getData();
+        if ($data = Cache::get('configs.'.$configKey->value)) {
+            return $data;
+        }
+        self::updateCache();
+
+        return Config::where('key', $configKey)->first()->getData();
     }
 
-    private static function getCachedData(ConfigKey $configKey): array|null
+    private static function updateCache(): void
     {
-        return Cache::get('configs.'.$configKey->name);
-    }
-
-    public static function getLimitedValue(ConfigKey $configKey, User $user = null): string|array|bool|int|float
-    {
-        return self::getValue(self::getLimitedVersionConfigKey($configKey, $user ?? Auth::user() ?? null));
+        foreach (Config::all() as $config) {
+            Cache::put(
+                'configs.'.$config->key,
+                [
+                    'type' => $config->type,
+                    'value' => $config->value,
+                ],
+                config("laravel-configurator.cache_expiration_in_seconds") ?? 60
+            );
+        }
     }
 
     private static function getLimitedVersionConfigKey(ConfigKey $configKey, User $user = null): ConfigKey|int
     {
-//        switch ($configKey) {
-//            case ConfigKey::BulkImportLimit:
-//            case ConfigKey::BulkImportLimitPro:
-//                return $user->isPro()
-//                    ? ConfigKey::BulkImportLimitPro
-//                    : ConfigKey::BulkImportLimit;
-//            case ConfigKey::NotificationsFeatureMailNotificationRateLimit:
-//            case ConfigKey::NotificationsFeatureMailNotificationRateLimitPro:
-//                return $user->isPro()
-//                    ? ConfigKey::NotificationsFeatureMailNotificationRateLimitPro
-//                    : ConfigKey::NotificationsFeatureMailNotificationRateLimit;
-//            case ConfigKey::LinksLinksLimit:
-//            case ConfigKey::LinksLinksLimitPro:
-//                return $user->isPro()
-//                    ? ConfigKey::LinksLinksLimitPro
-//                    : ConfigKey::LinksLinksLimit;
-//            case ConfigKey::ActiveLinksLimit:
-//            case ConfigKey::ActiveLinksLimitPro:
-//                return $user->isPro()
-//                    ? ConfigKey::ActiveLinksLimitPro
-//                    : ConfigKey::ActiveLinksLimit;
-//            case ConfigKey::ClicksClicksLimit:
-//            case ConfigKey::ClicksClicksLimitPro:
-//                return $user->isPro()
-//                    ? ConfigKey::ClicksClicksLimitPro
-//                    : ConfigKey::ClicksClicksLimit;
-//            default:
-//                return $configKey;
-//        }
+        return ConfigKey::from(config("laravel-subscription.$configKey->value")[$user?->getSubscribedPlan()]) ?? $configKey;
     }
 
     private static function convertToValue(ConfigType $type, string $value): string|array|bool|int|float|null
