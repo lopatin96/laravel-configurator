@@ -22,6 +22,6 @@ class ConfiguratorProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__.'/../config/config.php' => config_path('laravel-configurator.php')
-        ], 'laravel-configurator');
+        ], 'laravel-configurator-config');
     }
 }
