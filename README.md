@@ -1,6 +1,35 @@
+# Install
+### Enums
+
+Create two enums in *app/Enums* folder:
+```php
+<?php
+
+namespace App\Enums;
+
+enum ConfigKey: string
+{
+    case TestKey = 'TestKey';
+    case TestKeyPro = 'TestKeyPro';
+}
+```
+
+and
+
+```php
+<?php
+
+namespace App\Enums;
+
+enum ConfigCategory: string
+{
+    case TestCategory = 'TestCategory';
+}
+```
+
 # Usage
 ```php
-use Atin\LaravelConfigurator\Enums\ConfigKey;
+use App\Enums\ConfigKey;
 use Atin\LaravelConfigurator\Helpers\ConfiguratorHelper;
 
 class DashboardController extends Controller

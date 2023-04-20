@@ -2,7 +2,7 @@
 
 namespace Atin\LaravelConfigurator\Models;
 
-use Atin\LaravelConfigurator\Enums\ConfigCategory;
+use App\Enums\ConfigCategory;
 use Atin\LaravelConfigurator\Enums\ConfigType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

@@ -2,7 +2,7 @@
 
 namespace Atin\LaravelConfigurator\Helpers;
 
-use Atin\LaravelConfigurator\Enums\ConfigKey;
+use App\Enums\ConfigKey;
 use Atin\LaravelConfigurator\Enums\ConfigType;
 use Atin\LaravelConfigurator\Models\Config;
 use App\Models\User;
