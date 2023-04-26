@@ -54,9 +54,11 @@ class ConfiguratorHelper
 
     private static function getLimitedVersionConfigKey(ConfigKey $configKey, User $user = null): ConfigKey|int
     {
-        return $user && array_key_exists($user->getSubscribedPlan(), config("laravel-subscription.$configKey->value"))
-            ? ConfigKey::from(config("laravel-subscription.$configKey->value")[$user?->getSubscribedPlan()])
-            : $configKey;
+        return $user
+            && array_key_exists($configKey->value, config('laravel-subscription'))
+            && array_key_exists($user->getSubscribedPlan(), config("laravel-subscription.$configKey->value"))
+                ? ConfigKey::from(config("laravel-subscription.$configKey->value")[$user?->getSubscribedPlan()])
+                : $configKey;
     }
 
     private static function convertToValue(ConfigType $type, string $value): string|array|bool|int|float|null
