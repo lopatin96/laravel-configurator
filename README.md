@@ -103,7 +103,6 @@ class Config extends Resource
 
             Select::make('Type')->options([
                 ConfigType::String->value => ConfigType::String->value,
-                ConfigType::LongString->value => ConfigType::LongString->value,
                 ConfigType::Integer->value => ConfigType::Integer->value,
                 ConfigType::Float->value => ConfigType::Float->value,
                 ConfigType::Boolean->value => ConfigType::Boolean->value,
