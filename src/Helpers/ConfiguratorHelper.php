@@ -65,7 +65,6 @@ class ConfiguratorHelper
     {
         switch ($type) {
             case ConfigType::String:
-            case ConfigType::LongString:
                 return $value;
             case ConfigType::Integer:
                 return (int) $value;

@@ -5,7 +5,6 @@ namespace Atin\LaravelConfigurator\Enums;
 enum ConfigType: string
 {
     case String = 'string';
-    case LongString = 'long string';
     case Integer = 'integer';
     case Float = 'float';
     case Boolean = 'boolean';
