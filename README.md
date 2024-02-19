@@ -17,7 +17,6 @@ class User extends Authenticatable
 ```
 
 ### Enums
-
 Create two enums in *app/Enums* folder:
 ```php
 <?php
@@ -45,6 +44,7 @@ enum ConfigCategory: string
 ```
 
 ### Nova
+#### Config Resource
 ```php
 <?php
 
@@ -68,20 +68,10 @@ class Config extends Resource
         200,
     ];
 
-    public static $model = \Atin\LaravelConfigurator\Models\Config::class;
+    public static string $model = \Atin\LaravelConfigurator\Models\Config::class;
 
-    /**
-     * The single value that should be used to represent the resource when being displayed.
-     *
-     * @var string
-     */
     public static $title = 'key';
 
-    /**
-     * The columns that should be searched.
-     *
-     * @var array
-     */
     public static $search = [
         'key',
         'title',
@@ -89,21 +79,21 @@ class Config extends Resource
         'description',
     ];
 
-    /**
-     * Get the fields displayed by the resource.
-     *
-     * @return array
-     */
-    public function fields(NovaRequest $request)
+    public function fields(NovaRequest $request): array
     {
         return [
             Text::make('Key')->sortable()->readonly(),
 
             Select::make('Category')->options([
                 ConfigCategory::Profiles->value => ConfigCategory::Profiles->value,
-            ])->sortable()->readonly(),
+            ])
+                ->sortable()
+                ->readonly(),
 
-            Text::make('Title')->rules('nullable', 'max:64')->sortable()->hideFromIndex(),
+            Text::make('Title')
+                ->rules('nullable', 'max:64')
+                ->sortable()
+                ->hideFromIndex(),
 
             match ($this->type) {
                 ConfigType::ArrayOfStrings => Text::make('Value')->displayUsing(fn () => mb_strimwidth($this->value, 0, 50, '…'))->onlyOnIndex(),
@@ -125,21 +115,50 @@ class Config extends Resource
                 ConfigType::Boolean->value => ConfigType::Boolean->value,
                 ConfigType::ArrayOfStrings->value => ConfigType::ArrayOfStrings->value,
                 ConfigType::ArrayOfIntegers->value => ConfigType::ArrayOfIntegers->value,
-            ])->sortable(),
+            ])
+                ->sortable(),
 
-            Text::make('Description')->rules('nullable', 'max:256')->hideFromIndex(),
+            Text::make('Description')
+                ->rules('nullable', 'max:256')
+                ->hideFromIndex(),
         ];
     }
 
-    public static function authorizedToCreate(Request $request)
+    public static function authorizedToCreate(Request $request): bool
     {
         return false;
     }
 
-    public function authorizedToDelete(Request $request)
+    public function authorizedToDelete(Request $request): bool
     {
         return false;
     }
+}
+```
+
+#### User Resource
+```php
+class User extends Resource
+{
+    …
+    public function fields(NovaRequest $request): array
+    {
+        return [
+            ID::make()
+                ->sortable()
+                ->hideFromIndex(),
+                
+            new Panel('Config', $this->configFields()),
+            …
+    }
+    
+    protected function configFields(): array
+    {
+        return [
+            KeyValue::make('Config')->rules('json'),
+        ];
+    }
+    …
 }
 ```
 
