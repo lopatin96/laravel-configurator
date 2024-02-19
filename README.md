@@ -1,4 +1,21 @@
 # Install
+### Trait
+Add **casts** and **HasConfig** trait to User model
+
+```php
+
+use Atin\LaravelConfigurator\Traits\HasConfig;
+
+class User extends Authenticatable
+{
+    use HasConfig, …
+
+    protected $casts = [
+        …
+        'config' => 'object',
+    ];
+```
+
 ### Enums
 
 Create two enums in *app/Enums* folder:

@@ -6,19 +6,13 @@ use App\Enums\ConfigKey;
 use Atin\LaravelConfigurator\Enums\ConfigType;
 use Atin\LaravelConfigurator\Models\Config;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 class ConfiguratorHelper
 {
     public static function getLimitedValue(ConfigKey $configKey, User $user = null): string|array|bool|int|float
     {
-        return self::getValue(
-            self::getLimitedVersionConfigKey(
-                $configKey,
-                $user ?? Auth::user()
-            )
-        );
+        return self::getValue(self::getLimitedVersionConfigKey($configKey, $user ?? auth()->user()));
     }
 
     public static function getValue(ConfigKey $configKey): string|array|bool|int|float
@@ -28,11 +22,12 @@ class ConfiguratorHelper
         return self::convertToValue($data['type'], $data['value']);
     }
 
-    private static function getData(ConfigKey $configKey): array
+    public static function getData(ConfigKey $configKey): array
     {
         if ($data = Cache::get('configs.'.$configKey->value)) {
             return $data;
         }
+
         self::updateCache();
 
         return Config::where('key', $configKey)->first()->getData();
@@ -61,7 +56,7 @@ class ConfiguratorHelper
                 : $configKey;
     }
 
-    private static function convertToValue(ConfigType $type, string $value): string|array|bool|int|float|null
+    public static function convertToValue(ConfigType $type, string $value): string|array|bool|int|float|null
     {
         switch ($type) {
             case ConfigType::String:
@@ -81,10 +76,8 @@ class ConfiguratorHelper
         return null;
     }
 
-    public static function getString(
-        ConfigKey $configKey,
-        string $implodeWithSeparator = ','
-    ): string {
+    public static function getString(ConfigKey $configKey, string $implodeWithSeparator = ','): string
+    {
         $data = self::getData($configKey);
 
         return self::convertToString($data['type'], $data['value'], $implodeWithSeparator);
