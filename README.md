@@ -63,11 +63,6 @@ use function PHPUnit\Framework\matches;
 
 class Config extends Resource
 {
-    public static $perPageOptions = [
-        100,
-        200,
-    ];
-
     public static string $model = \Atin\LaravelConfigurator\Models\Config::class;
 
     public static $title = 'key';
