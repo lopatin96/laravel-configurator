@@ -9,7 +9,7 @@ trait HasConfig
 {
     public function getConfig(ConfigKey $configKey): string|array|bool|int|float
     {
-        if ($value = $this->config?->{$configKey->name}) {
+        if ($value = $this->config?->{$configKey->name} ?? null) {
             return ConfiguratorHelper::convertToValue(ConfiguratorHelper::getData($configKey)['type'], $value);
         }
 
