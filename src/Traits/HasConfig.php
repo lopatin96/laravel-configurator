@@ -13,6 +13,6 @@ trait HasConfig
             return ConfiguratorHelper::convertToValue(ConfiguratorHelper::getData($configKey)['type'], $value);
         }
 
-        return ConfiguratorHelper::getLimitedValue($configKey, auth()->user());
+        return ConfiguratorHelper::getLimitedValue($configKey, $this);
     }
 }
