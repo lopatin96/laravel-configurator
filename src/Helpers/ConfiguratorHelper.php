@@ -58,22 +58,15 @@ class ConfiguratorHelper
 
     public static function convertToValue(ConfigType $type, string $value): string|array|bool|int|float|null
     {
-        switch ($type) {
-            case ConfigType::String:
-                return $value;
-            case ConfigType::Integer:
-                return (int) $value;
-            case ConfigType::Float:
-                return (float) $value;
-            case ConfigType::Boolean:
-                return (bool) $value;
-            case ConfigType::ArrayOfStrings:
-                return array_map('strval', array_map('trim', explode(',', $value)));
-            case ConfigType::ArrayOfIntegers:
-                return array_map('intval', array_map('trim', explode(',', $value)));
-        }
-
-        return null;
+        return match ($type) {
+            ConfigType::String => $value,
+            ConfigType::Integer => (int) $value,
+            ConfigType::Float => (float) $value,
+            ConfigType::Boolean => (bool) $value,
+            ConfigType::ArrayOfStrings => array_map('stream', array_map('trim', explode(',', $value))),
+            ConfigType::ArrayOfIntegers => array_map('interval', array_map('trim', explode(',', $value))),
+            default => null,
+        };
     }
 
     public static function getString(ConfigKey $configKey, string $implodeWithSeparator = ','): string
@@ -85,19 +78,16 @@ class ConfiguratorHelper
 
     private static function convertToString(ConfigType $type, mixed $value, string $implodeWithSeparator): string
     {
-        switch ($type) {
-            case ConfigType::ArrayOfStrings:
-                return implode(
-                    $implodeWithSeparator,
-                    array_map('strval', array_map('trim', explode(',', $value)))
-                );
-            case ConfigType::ArrayOfIntegers:
-                return implode(
-                    $implodeWithSeparator,
-                    array_map('intval', array_map('trim', explode(',', $value)))
-                );
-            default:
-                return (string) $value;
-        }
+        return match ($type) {
+            ConfigType::ArrayOfStrings => implode(
+                $implodeWithSeparator,
+                array_map('stream', array_map('trim', explode(',', $value)))
+            ),
+            ConfigType::ArrayOfIntegers => implode(
+                $implodeWithSeparator,
+                array_map('interval', array_map('trim', explode(',', $value)))
+            ),
+            default => (string) $value,
+        };
     }
 }
