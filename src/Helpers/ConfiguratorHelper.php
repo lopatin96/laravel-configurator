@@ -56,16 +56,15 @@ class ConfiguratorHelper
                 : $configKey;
     }
 
-    public static function convertToValue(ConfigType $type, string $value): string|array|bool|int|float|null
+    public static function convertToValue(ConfigType $type, string $value): string|array|bool|int|float
     {
         return match ($type) {
             ConfigType::String => $value,
             ConfigType::Integer => (int) $value,
             ConfigType::Float => (float) $value,
             ConfigType::Boolean => (bool) $value,
-            ConfigType::ArrayOfStrings => array_map('stream', array_map('trim', explode(',', $value))),
-            ConfigType::ArrayOfIntegers => array_map('interval', array_map('trim', explode(',', $value))),
-            default => null,
+            ConfigType::ArrayOfStrings => array_map('strval', array_map('trim', explode(',', $value))),
+            ConfigType::ArrayOfIntegers => array_map('intval', array_map('trim', explode(',', $value))),
         };
     }
 
@@ -81,11 +80,11 @@ class ConfiguratorHelper
         return match ($type) {
             ConfigType::ArrayOfStrings => implode(
                 $implodeWithSeparator,
-                array_map('stream', array_map('trim', explode(',', $value)))
+                array_map('strval', array_map('trim', explode(',', $value)))
             ),
             ConfigType::ArrayOfIntegers => implode(
                 $implodeWithSeparator,
-                array_map('interval', array_map('trim', explode(',', $value)))
+                array_map('intval', array_map('trim', explode(',', $value)))
             ),
             default => (string) $value,
         };
