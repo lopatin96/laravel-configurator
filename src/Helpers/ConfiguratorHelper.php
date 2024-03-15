@@ -51,8 +51,8 @@ class ConfiguratorHelper
     {
         return $user
             && array_key_exists($configKey->value, config('laravel-subscription'))
-            && array_key_exists($user->getSubscribedPlan(), config("laravel-subscription.$configKey->value"))
-                ? ConfigKey::from(config("laravel-subscription.$configKey->value")[$user?->getSubscribedPlan()])
+            && array_key_exists($user->getSubscribedPlanIdx(), config("laravel-subscription.$configKey->value"))
+                ? ConfigKey::from(config("laravel-subscription.$configKey->value")[$user?->getSubscribedPlanIdx()])
                 : $configKey;
     }
 
