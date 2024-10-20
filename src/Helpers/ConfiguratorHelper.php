@@ -63,8 +63,8 @@ class ConfiguratorHelper
             ConfigType::Integer => (int) $value,
             ConfigType::Float => (float) $value,
             ConfigType::Boolean => (bool) $value,
-            ConfigType::ArrayOfStrings => array_map('strval', array_map('trim', explode(',', $value))),
-            ConfigType::ArrayOfIntegers => array_map('intval', array_map('trim', explode(',', $value))),
+            ConfigType::ArrayOfStrings => ($value === '' || $value === null) ? [] : array_map('strval', array_map('trim', explode(',', $value))),
+            ConfigType::ArrayOfIntegers => ($value === '' || $value === null) ? [] : array_map('strval', array_map('trim', explode(',', $value))),
         };
     }
 
