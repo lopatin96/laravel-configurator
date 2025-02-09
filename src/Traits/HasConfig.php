@@ -4,6 +4,8 @@ namespace Atin\LaravelConfigurator\Traits;
 
 use App\Enums\ConfigKey;
 use Atin\LaravelConfigurator\Helpers\ConfiguratorHelper;
+use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 trait HasConfig
 {
@@ -29,9 +31,13 @@ trait HasConfig
             throw new InvalidArgumentException('Amount value passed to increment method must be a positive number.');
         }
 
-        return $this->forceFill([
-            "config->$configKey->name" => $this->getConfig($configKey) + $amount,
-        ])->save();
+        $configKeyName = $configKey->name;
+
+        return DB::table('users')
+            ->where('id', auth()->id())
+            ->update([
+                'config' => DB::raw('JSON_SET(config, "$.' . $configKeyName . '", JSON_EXTRACT(config, "$.' . $configKeyName . '") + ' . $amount . ')')
+            ]);
     }
 
     public function decrementConfigValue(ConfigKey $configKey, int $amount = 1): bool
@@ -40,8 +46,12 @@ trait HasConfig
             throw new InvalidArgumentException('Amount value passed to increment method must be a positive number.');
         }
 
-        return $this->forceFill([
-            "config->$configKey->name" => $this->getConfig($configKey) - $amount,
-        ])->save();
+        $configKeyName = $configKey->name;
+
+        return DB::table('users')
+            ->where('id', auth()->id())
+            ->update([
+                'config' => DB::raw('JSON_SET(config, "$.' . $configKeyName . '", JSON_EXTRACT(config, "$.' . $configKeyName . '") - ' . $amount . ')')
+            ]);
     }
 }
