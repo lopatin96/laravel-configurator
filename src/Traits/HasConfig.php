@@ -33,6 +33,8 @@ trait HasConfig
 
         $configKeyName = $configKey->name;
 
+        $this->setZeroValueIfMissingOrNull($configKey);
+
         return DB::table('users')
             ->where('id', auth()->id())
             ->update([
@@ -48,10 +50,27 @@ trait HasConfig
 
         $configKeyName = $configKey->name;
 
+        $this->setZeroValueIfMissingOrNull($configKey);
+
         return DB::table('users')
             ->where('id', auth()->id())
             ->update([
                 'config' => DB::raw('JSON_SET(config, "$.' . $configKeyName . '", JSON_EXTRACT(config, "$.' . $configKeyName . '") - ' . $amount . ')')
             ]);
+    }
+
+    private function setZeroValueIfMissingOrNull(ConfigKey $configKey): void
+    {
+        $configKeyName = $configKey->name;
+
+        $currentValue = DB::table('users')
+            ->where('id', auth()->id())
+            ->value('config');
+
+        $configData = json_decode($currentValue, true);
+
+        if (! isset($configData[$configKeyName]) || is_null($configData[$configKeyName])) {
+            $this->setConfigValue($configKey, 0);
+        }
     }
 }
