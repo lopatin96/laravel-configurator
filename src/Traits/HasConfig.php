@@ -38,7 +38,11 @@ trait HasConfig
         return DB::table('users')
             ->where('id', $this->id)
             ->update([
-                'config' => DB::raw('JSON_SET(config, "$.' . $configKeyName . '", JSON_EXTRACT(config, "$.' . $configKeyName . '") + ' . $amount . ')')
+                'config' => DB::raw('JSON_SET(
+                    COALESCE(config, "{}"), 
+                    "$.' . $configKeyName . '", 
+                    CAST(COALESCE(JSON_EXTRACT(config, "$.' . $configKeyName . '"), 0) AS INTEGER) + ' . $amount . '
+                )')
             ]);
     }
 
@@ -55,7 +59,11 @@ trait HasConfig
         return DB::table('users')
             ->where('id', $this->id)
             ->update([
-                'config' => DB::raw('JSON_SET(config, "$.' . $configKeyName . '", JSON_EXTRACT(config, "$.' . $configKeyName . '") - ' . $amount . ')')
+                'config' => DB::raw('JSON_SET(
+                    COALESCE(config, "{}"), 
+                    "$.' . $configKeyName . '", 
+                    CAST(COALESCE(JSON_EXTRACT(config, "$.' . $configKeyName . '"), 0) AS INTEGER) - ' . $amount . '
+                )')
             ]);
     }
 
