@@ -41,7 +41,7 @@ trait HasConfig
                 'config' => DB::raw('JSON_SET(
                     COALESCE(config, "{}"), 
                     "$.' . $configKeyName . '", 
-                    CAST(COALESCE(JSON_EXTRACT(config, "$.' . $configKeyName . '"), 0) AS INTEGER) + ' . $amount . '
+                    CAST(COALESCE(JSON_EXTRACT(config, "$.' . $configKeyName . '"), 0) AS SIGNED) + ' . $amount . '
                 )')
             ]);
     }
@@ -62,7 +62,7 @@ trait HasConfig
                 'config' => DB::raw('JSON_SET(
                     COALESCE(config, "{}"), 
                     "$.' . $configKeyName . '", 
-                    CAST(COALESCE(JSON_EXTRACT(config, "$.' . $configKeyName . '"), 0) AS INTEGER) - ' . $amount . '
+                    CAST(COALESCE(JSON_EXTRACT(config, "$.' . $configKeyName . '"), 0) AS SIGNED) - ' . $amount . '
                 )')
             ]);
     }
